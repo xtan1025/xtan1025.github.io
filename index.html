@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Xuan Tan">
+<meta property="og:description" content="Dexterous robot hands: grasp planning, contact-aware control, and force sensing. Research assistant, Correll Lab, University of Colorado Boulder.">
+<meta property="og:url" content="https://xtan1025.github.io/">
+<meta property="og:image" content="https://xtan1025.github.io/figs/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="figs/favicon.svg" type="image/svg+xml">
+<title>Xuan Tan</title>
+<meta name="description" content="Xuan Tan works on dexterous robot hands: grasp planning, contact-aware control, and force sensing. Research assistant in the Correll Lab, University of Colorado Boulder.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: one reading column (about 46rem) with figures at full column width;
+   masthead, research, other projects and footer stack, separated by hairlines. */
+:root {
+  --paper: #F5F7FA;
+  --surface: #FFFFFF;
+  --ink: #131A26;
+  --ink-2: #3A4354;
+  --muted: #5E6778;
+  --rule: #DDE2EA;
+  --accent: #2446C8;
+  --accent-hover: #17308F;
+  --accent-soft: #E7ECFB;
+  --mark: #2446C8;
+  --mark-base: #959DAB;
+  --plate: #FFFFFF;
+  --img-dim: 1;
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --measure: 46rem;
+  --label-col: 8.75rem;
+  --val-room: 3.4rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0F1218;
+    --surface: #151A22;
+    --ink: #E7EAF0;
+    --ink-2: #C3C9D4;
+    --muted: #98A1B0;
+    --rule: #283040;
+    --accent: #9DB0FF;
+    --accent-hover: #C6D1FF;
+    --accent-soft: #1B2442;
+    --mark: #6A84F0;
+    --mark-base: #6B7486;
+    --plate: #F2F4F7;
+    --img-dim: 0.9;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0F1218;
+  --surface: #151A22;
+  --ink: #E7EAF0;
+  --ink-2: #C3C9D4;
+  --muted: #98A1B0;
+  --rule: #283040;
+  --accent: #9DB0FF;
+  --accent-hover: #C6D1FF;
+  --accent-soft: #1B2442;
+  --mark: #6A84F0;
+  --mark-base: #6B7486;
+  --plate: #F2F4F7;
+  --img-dim: 0.9;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+:root {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; }
+[hidden] { display: none !important; }
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+a:hover { color: var(--accent-hover); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.page {
+  max-width: calc(var(--measure) + 32px);
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: clamp(2.5rem, 7vw, 4.5rem) 2.5rem;
+  display: grid;
+  gap: 3.25rem;
+}
+.page > * { min-width: 0; }
+
+/* Masthead */
+.masthead {
+  display: grid;
+  gap: 0.6rem;
+  padding-bottom: 2.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+.name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+.role {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.3;
+  color: var(--ink-2);
+  margin: 0;
+}
+.focus { margin: 0; max-width: 38rem; font-size: 1.125rem; }
+.status { margin: 0.35rem 0 0; }
+.chip {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.98rem;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 0.22rem 0.75rem;
+  border-radius: 999px;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.4rem;
+  margin-top: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.08rem;
+}
+.links a { overflow-wrap: anywhere; }
+
+/* Sections */
+h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+section > p { margin: 0 0 1rem; }
+section > p:last-child { margin-bottom: 0; }
+
+/* Projects */
+.project { display: grid; gap: 0.95rem; }
+.project > * { min-width: 0; }
+.project p { margin: 0; }
+.project + .project {
+  margin-top: 2.75rem;
+  padding-top: 2.25rem;
+  border-top: 1px solid var(--rule);
+}
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.project h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.45rem, 3.8vw, 1.9rem);
+  line-height: 1.12;
+  margin: 0;
+  text-wrap: balance;
+}
+.authors { color: var(--ink-2); font-size: 0.98rem; }
+.authors strong { color: var(--ink); font-weight: 600; }
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+.meta .note { color: var(--muted); }
+
+.specs {
+  list-style: none;
+  margin: 0.35rem 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.specs li {
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  padding: 0.95rem 0.9rem 0.95rem 0;
+}
+.specs li + li { padding-left: 0.9rem; border-left: 1px solid var(--rule); }
+.spec-val {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.spec-label { font-size: 0.86rem; line-height: 1.35; color: var(--muted); }
+
+figure { margin: 0; }
+.plate { display: grid; gap: 0.6rem; align-content: start; }
+.plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--plate);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  filter: brightness(var(--img-dim));
+}
+.plate figcaption { font-size: 0.9rem; line-height: 1.45; color: var(--muted); }
+.photos {
+  display: grid;
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.51fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* Results chart: emphasis bars on a shared 0-100% scale */
+.results {
+  display: grid;
+  gap: 1.1rem;
+  padding-block: 1.4rem 1.2rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.results-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+}
+.results h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 0;
+}
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+.key span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.sw { width: 12px; height: 12px; border-radius: 3px; background: var(--mark); }
+.sw.base { background: var(--mark-base); }
+.panels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 2.25rem;
+}
+.panel { display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.panel-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.25;
+}
+.panel-title span { display: block; font-weight: 500; font-size: 0.9rem; color: var(--muted); }
+.rows { display: grid; gap: 2px; }
+.row {
+  display: grid;
+  grid-template-columns: var(--label-col) minmax(0, 1fr);
+  align-items: center;
+  min-height: 28px;
+  border-radius: 4px;
+}
+.row:focus-visible { outline-offset: 1px; }
+.lbl {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  color: var(--ink-2);
+  padding-right: 0.6rem;
+}
+.row:hover .lbl, .row:focus-visible .lbl { color: var(--ink); }
+.scale {
+  position: relative;
+  height: 28px;
+  margin-right: var(--val-room);
+  background-image:
+    linear-gradient(var(--rule), var(--rule)),
+    linear-gradient(var(--rule), var(--rule)),
+    linear-gradient(var(--rule), var(--rule));
+  background-size: 1px 100%;
+  background-repeat: no-repeat;
+  background-position: 0 0, 50% 0, 100% 0;
+}
+.bar {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  height: 14px;
+  width: calc(var(--v) * 1%);
+  background: var(--mark);
+  border-radius: 0 4px 4px 0;
+}
+.bar.base { background: var(--mark-base); }
+.val {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--v) * 1% + 6px);
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+  background: var(--paper);
+  padding: 0 3px;
+}
+.axis { display: grid; grid-template-columns: var(--label-col) minmax(0, 1fr); }
+.ticks {
+  position: relative;
+  height: 1rem;
+  margin-right: var(--val-room);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.ticks span { position: absolute; top: 0; }
+.ticks .t0 { left: 0; }
+.ticks .t50 { left: 50%; transform: translateX(-50%); }
+.ticks .t100 { right: 0; }
+.panel-note { margin: 0.1rem 0 0; font-size: 0.86rem; line-height: 1.4; color: var(--muted); }
+.tip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.3;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.table-view summary {
+  cursor: pointer;
+  width: fit-content;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.98rem;
+  color: var(--accent);
+}
+.table-wrap { overflow-x: auto; margin-top: 0.75rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td {
+  text-align: left;
+  padding: 0.4rem 0.9rem 0.4rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+th { font-family: var(--font-display); font-weight: 600; color: var(--ink-2); }
+.num {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Other projects */
+.plist { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.6rem; }
+.plist li { display: grid; gap: 0.35rem; }
+.plist p { margin: 0; }
+.ptitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.ptitle h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.22rem;
+  line-height: 1.2;
+  margin: 0;
+}
+.year {
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.sub { color: var(--muted); font-size: 0.92rem; }
+
+.site-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .specs li:nth-child(3) { padding-left: 0; border-left: 0; }
+  .specs li:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  .panels { grid-template-columns: minmax(0, 1fr); }
+  .photos { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 420px) {
+  :root { --label-col: 7.4rem; }
+  .lbl { font-size: 0.9rem; }
+  .spec-val { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <h1 class="name">Xuan Tan</h1>
+    <p class="role">Research assistant, Correll Lab, University of Colorado Boulder</p>
+    <p class="focus">I work on dexterous robot hands for everyday manipulation: grasp planning, contact-aware control, and force sensing.</p>
+    <p class="status"><span class="chip">Applying to PhD programs for Fall 2027</span></p>
+    <nav class="links" aria-label="Contact and profiles">
+      <a href="Xuan_Tan_CV.pdf">CV (PDF)</a>
+      <a href="mailto:xuan.tan@colorado.edu">xuan.tan@colorado.edu</a>
+      <a href="https://github.com/xtan1025">GitHub</a>
+      <a href="https://www.linkedin.com/in/xuantan1025">LinkedIn</a>
+      <!-- Add once you have a profile:
+      <a href="https://scholar.google.com/citations?user=YOUR-ID">Google Scholar</a>
+      -->
+    </nav>
+  </header>
+
+  <section aria-labelledby="about-h">
+    <h2 id="about-h">About</h2>
+    <p>I joined Nikolaus Correll's lab at the University of Colorado Boulder in March 2025, graduated with a B.S. in Computer Science that December, and have worked in the lab full-time since.</p>
+    <p>My work started with a practical problem. The Inspire RH56, a humanoid hand that costs about $8,000, drives twelve joints with six motors and reports only raw, uncalibrated force readings. I characterized the hand, modeled its coupled fingers, and built the planner and controller that took its grasp success from 48% to 87%. I am now interested in how a hand's mechanism, sensing, and control together decide which everyday tasks it can do well.</p>
+  </section>
+
+  <section aria-labelledby="research-h">
+    <h2 id="research-h">Research</h2>
+
+    <article class="project">
+      <p class="kicker">First-author paper · under review</p>
+      <h3>Grasp Planning and Contact Control for the Inspire RH56 Hand Family</h3>
+      <p class="authors"><strong>Xuan Tan</strong>, William Xie, Nikolaus Correll</p>
+      <p class="meta">
+        <span><a href="https://arxiv.org/abs/2603.08988">arXiv:2603.08988</a> <span class="note">(earlier version)</span></span>
+        <a href="https://correlllab.github.io/rh56dfx.html">Project page</a>
+        <a href="https://github.com/correlllab/rh56_controller">Code</a>
+      </p>
+
+      <ul class="specs" aria-label="The RH56 hand at a glance">
+        <li><span class="spec-val">6 motors</span><span class="spec-label">drive 12 joints through fixed linkages</span></li>
+        <li><span class="spec-val">0–110 mm</span><span class="spec-label">two-finger pinch width</span></li>
+        <li><span class="spec-val">49°</span><span class="spec-label">wrist rotation to keep one pinch aligned</span></li>
+        <li><span class="spec-val">16×</span><span class="spec-label">force-limit overshoot at full speed</span></li>
+      </ul>
+
+      <figure class="plate">
+        <img src="figs/rh56-coupling.jpg" width="1190" height="924" alt="Rendered model of the RH56 hand. Colored arcs trace each fingertip's path, and three poses show the wrist tilting as a two-finger pinch closes from 110 mm to 0 mm.">
+        <figcaption>The coupled linkages move each fingertip along a fixed arc (A). Holding the same pinch from 110 mm down to 0 mm takes up to 49° of wrist rotation and 23 mm of translation (B).</figcaption>
+      </figure>
+
+      <p>Treated like a parallel-jaw gripper, this hand fails about half its grasps. I calibrated its finger forces against a force gauge, designed a controller that approaches fast and makes contact slowly, and modeled the linkages in MuJoCo to map an object's width to finger closure and wrist pose. Two planned strategies use that map: <em>iterative closure</em> follows the wrist path while the fingers close, and <em>reflex closure</em> moves to the final pose with the fingers open, then closes when the thumb touches the object.</p>
+
+      <div class="results" role="group" aria-labelledby="results-h">
+        <div class="results-head">
+          <h4 id="results-h">Results on the real hand</h4>
+          <p class="key" aria-label="Legend"><span><i class="sw" aria-hidden="true"></i>Planned with the hand model</span><span><i class="sw base" aria-hidden="true"></i>Baseline</span></p>
+        </div>
+
+        <div class="panels">
+          <figure class="panel">
+            <figcaption class="panel-title">All 15 objects<span>150 grasps per strategy</span></figcaption>
+            <div class="rows">
+              <div class="row" tabindex="0" data-tip="123 of 150 grasps"><span class="lbl">Iterative closure</span><span class="scale" style="--v:82.0"><span class="bar" aria-hidden="true"></span><span class="val">82.0%</span></span></div>
+              <div class="row" tabindex="0" data-tip="130 of 150 grasps"><span class="lbl">Reflex closure</span><span class="scale" style="--v:86.7"><span class="bar" aria-hidden="true"></span><span class="val">86.7%</span></span></div>
+              <div class="row" tabindex="0" data-tip="72 of 150 grasps"><span class="lbl">Parallel-jaw</span><span class="scale" style="--v:48.0"><span class="bar base" aria-hidden="true"></span><span class="val">48.0%</span></span></div>
+            </div>
+            <div class="axis" aria-hidden="true"><span></span><span class="ticks"><span class="t0">0</span><span class="t50">50</span><span class="t100">100%</span></span></div>
+          </figure>
+
+          <figure class="panel">
+            <figcaption class="panel-title">Delicate objects<span>raspberry, strawberry, paper cup, egg, M6 nut · 50 grasps each</span></figcaption>
+            <div class="rows">
+              <div class="row" tabindex="0" data-tip="47 of 50 grasps"><span class="lbl">Iterative closure</span><span class="scale" style="--v:94"><span class="bar" aria-hidden="true"></span><span class="val">94%</span></span></div>
+              <div class="row" tabindex="0" data-tip="40 of 50 grasps"><span class="lbl">Reflex closure</span><span class="scale" style="--v:80"><span class="bar" aria-hidden="true"></span><span class="val">80%</span></span></div>
+              <div class="row" tabindex="0" data-tip="10 of 50 grasps"><span class="lbl">Parallel-jaw</span><span class="scale" style="--v:20"><span class="bar base" aria-hidden="true"></span><span class="val">20%</span></span></div>
+            </div>
+            <div class="axis" aria-hidden="true"><span></span><span class="ticks"><span class="t0">0</span><span class="t50">50</span><span class="t100">100%</span></span></div>
+            <p class="panel-note">Simulation predicted reflex closure would reach more of these objects (90% vs. 70%). On the real hand, fast contact made objects slip, and the order reversed.</p>
+          </figure>
+
+          <figure class="panel">
+            <figcaption class="panel-title">With real RGB-D perception<span>7 objects × 10 starting poses</span></figcaption>
+            <div class="rows">
+              <div class="row" tabindex="0" data-tip="34 of 70 test conditions"><span class="lbl">Reflex closure</span><span class="scale" style="--v:48.6"><span class="bar" aria-hidden="true"></span><span class="val">48.6%</span></span></div>
+              <div class="row" tabindex="0" data-tip="13 of 70 test conditions"><span class="lbl">GraspGen-X</span><span class="scale" style="--v:18.6"><span class="bar base" aria-hidden="true"></span><span class="val">18.6%</span></span></div>
+            </div>
+            <div class="axis" aria-hidden="true"><span></span><span class="ticks"><span class="t0">0</span><span class="t50">50</span><span class="t100">100%</span></span></div>
+            <p class="panel-note">GraspGen-X is a learned grasp generator that supports this hand. Grasps rejected before execution count as failures.</p>
+          </figure>
+
+          <figure class="panel">
+            <figcaption class="panel-title">Peg-in-hole release<span>20 insertions each</span></figcaption>
+            <div class="rows">
+              <div class="row" tabindex="0" data-tip="13 of 20 insertions"><span class="lbl">Thumb force</span><span class="scale" style="--v:65"><span class="bar" aria-hidden="true"></span><span class="val">65%</span></span></div>
+              <div class="row" tabindex="0" data-tip="2 of 20 insertions"><span class="lbl">Wrist F/T sensor</span><span class="scale" style="--v:10"><span class="bar base" aria-hidden="true"></span><span class="val">10%</span></span></div>
+            </div>
+            <div class="axis" aria-hidden="true"><span></span><span class="ticks"><span class="t0">0</span><span class="t50">50</span><span class="t100">100%</span></span></div>
+            <p class="panel-note">Release fires at 10 times the sensor's noise: about 0.12 N at the thumb and 1.1 N at the wrist.</p>
+          </figure>
+        </div>
+
+        <details class="table-view">
+          <summary>Show these results as a table</summary>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Test</th><th scope="col">Method</th><th scope="col" class="num">Success</th><th scope="col" class="num">Count</th></tr></thead>
+              <tbody>
+                <tr><td>All 15 objects</td><td>Iterative closure</td><td class="num">82.0%</td><td class="num">123 / 150</td></tr>
+                <tr><td>All 15 objects</td><td>Reflex closure</td><td class="num">86.7%</td><td class="num">130 / 150</td></tr>
+                <tr><td>All 15 objects</td><td>Parallel-jaw (baseline)</td><td class="num">48.0%</td><td class="num">72 / 150</td></tr>
+                <tr><td>Delicate objects</td><td>Iterative closure</td><td class="num">94%</td><td class="num">47 / 50</td></tr>
+                <tr><td>Delicate objects</td><td>Reflex closure</td><td class="num">80%</td><td class="num">40 / 50</td></tr>
+                <tr><td>Delicate objects</td><td>Parallel-jaw (baseline)</td><td class="num">20%</td><td class="num">10 / 50</td></tr>
+                <tr><td>Real RGB-D perception</td><td>Reflex closure</td><td class="num">48.6%</td><td class="num">34 / 70</td></tr>
+                <tr><td>Real RGB-D perception</td><td>GraspGen-X (baseline)</td><td class="num">18.6%</td><td class="num">13 / 70</td></tr>
+                <tr><td>Peg-in-hole release</td><td>Thumb force</td><td class="num">65%</td><td class="num">13 / 20</td></tr>
+                <tr><td>Peg-in-hole release</td><td>Wrist F/T sensor (baseline)</td><td class="num">10%</td><td class="num">2 / 20</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <div class="photos">
+        <figure class="plate">
+          <img src="figs/strategies.jpg" width="704" height="750" alt="Nine photos of the robot hand grasping objects on a table, one column per strategy. In the naive column the hand collides with the table or misses the object.">
+          <figcaption>Iterative (left), reflex (middle), and naive closure (right) on the real hand. Naive closure hits the table or misses.</figcaption>
+        </figure>
+        <figure class="plate">
+          <img src="figs/peg-in-hole.jpg" width="1200" height="795" alt="Six frames of the hand holding a square peg, sliding it across a board, and releasing it into a hole.">
+          <figcaption>Peg-in-hole insertion. A spike and then a drop in the thumb's force reading trigger release.</figcaption>
+        </figure>
+      </div>
+
+      <p><strong>My role.</strong> First author. I built the MuJoCo model, planner, controller, and experiment tools, ran the hardware studies, and am the lead developer of <a href="https://github.com/correlllab/rh56_controller">rh56_controller</a>, the open-source package released with the paper.</p>
+    </article>
+
+    <article class="project">
+      <p class="kicker">Contributing author · preprint</p>
+      <h3>GOLEM: Modular Humanoid Autonomy Towards Electric Vehicle Battery Disassembly</h3>
+      <p class="authors">Max Conway, William Xie, Allen Devaraj, Yutong Zhang, Niraj Pudasaini, Mateo Feit, Adam Abid, Zachary Allen, Chen Liu, <strong>Xuan Tan</strong>, Jensen Lavering, Jason Chen, Lyle Antieau, Anthony Von Pischke, Alessandro Roncone, Zachary Sunberg, Nikolaus Correll</p>
+      <p class="meta">
+        <a href="https://arxiv.org/abs/2608.21550">arXiv:2608.21550</a>
+        <a href="https://golem-humanoid.github.io">Project page</a>
+      </p>
+      <p>An open-source, modular autonomy system that lets a Unitree H1-2 humanoid work on a real Hyundai Ioniq 5 battery pack. I integrated an existing FAISS-based retrieval pipeline into its spatial-memory module and ran experiments for the study.</p>
+    </article>
+  </section>
+
+  <section aria-labelledby="projects-h">
+    <h2 id="projects-h">Other projects</h2>
+    <ul class="plist">
+      <li>
+        <div class="ptitle"><h3>Supermarket object retrieval with TIAGo</h3><span class="year">2025</span></div>
+        <p class="sub">Three-person team · Webots simulation</p>
+        <p>Built occupancy-grid mapping, path planning, and control for autonomous navigation, and integrated grasp-pose generation, inverse kinematics, and motion planning to move items from shelf to basket.</p>
+      </li>
+      <li>
+        <div class="ptitle"><h3>Sand Dunes Rover</h3><span class="year">2024</span></div>
+        <p class="sub">Colorado Space Grant Consortium · Seven-person team</p>
+        <p>Led software development: Arduino motor-control and encoder firmware, an extended Kalman filter fusing IMU and encoder data, and PID-based waypoint tracking.</p>
+      </li>
+    </ul>
+  </section>
+
+  <footer class="site-foot">
+    <span>Xuan Tan · Boulder, Colorado</span>
+    <span>Updated October 2026</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var rows = document.querySelectorAll('.row[data-tip]');
+  if (!rows.length) return;
+  var tip = document.createElement('div');
+  tip.className = 'tip';
+  tip.id = 'bar-tip';
+  tip.setAttribute('role', 'tooltip');
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  function show(row) {
+    var bar = row.querySelector('.bar');
+    if (!bar) return;
+    tip.textContent = row.getAttribute('data-tip');
+    tip.hidden = false;
+    var b = bar.getBoundingClientRect();
+    var t = tip.getBoundingClientRect();
+    var left = b.right - t.width / 2;
+    var maxLeft = document.documentElement.clientWidth - t.width - 8;
+    left = Math.max(8, Math.min(left, maxLeft));
+    tip.style.left = (left + window.scrollX) + 'px';
+    tip.style.top = (b.top - t.height - 8 + window.scrollY) + 'px';
+    row.setAttribute('aria-describedby', 'bar-tip');
+  }
+  function hide(row) {
+    tip.hidden = true;
+    if (row) row.removeAttribute('aria-describedby');
+  }
+  rows.forEach(function (row) {
+    row.addEventListener('mouseenter', function () { show(row); });
+    row.addEventListener('mouseleave', function () { hide(row); });
+    row.addEventListener('focus', function () { show(row); });
+    row.addEventListener('blur', function () { hide(row); });
+  });
+  window.addEventListener('scroll', function () { tip.hidden = true; }, { passive: true });
+})();
+</script>
+</body>
+</html>
